@@ -19,7 +19,6 @@ module.exports = function (app) {
     // each object (book) containing title, _id, and 
     // commentcount properties.
 
-    
     // -- GET --
     // ---------
     .get(async function (req, res){
@@ -85,16 +84,30 @@ module.exports = function (app) {
       if(!comment){res.send('missing required field comment')};
       let reqBook;
       try {
-        reqBook = Book.findById(bookId)  
+        reqBook = await Book.findById(bookid)  
       } catch (error) {};
       if(!reqBook){res.send('no book exists')};
+      reqBook.comments.push(comment);
+      await reqBook.save();
       res.json(reqBook.toJSON({virtuals:false}));
       //json res format same as .get
     })
-    
-    .delete(function(req, res){
-      let bookid = req.params.id;
+    // -- DELETE
+    // 6. You can send a DELETE request to /api/books/{_id} 
+    // to delete a book from the collection. The returned response 
+    // will be the string delete successful if successful. If no 
+    // book is found, return the string no book exists.
+    .delete(async function(req, res){
       //if successful response will be 'delete successful'
+      let bookid = req.params.id;
+      let foundBook;
+      try {
+        foundBook = await Book.findByIdAndDelete(bookid);
+      } catch (error) {};
+      if(!foundBook){
+        res.send('no book exists');
+      };
+      res.send('delete successful');
     });
   
 };

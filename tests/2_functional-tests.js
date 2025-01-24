@@ -118,19 +118,42 @@ suite('Functional Tests', function() {
       
     });
 
-
     suite('POST /api/books/[id] => add comment/expect book object with id', function(){
       
       test('Test POST /api/books/[id] with comment', function(done){
-        //done();
+        chai
+          .request(server)
+          .keepOpen()
+          .post(`/api/books/${insertedId}`)
+          .send({comment:'phylosophical'})
+          .end(function(err,res){
+            assert.property(res.body,'_id');
+            done();
+          })
       });
 
       test('Test POST /api/books/[id] without comment field', function(done){
-        //done();
+        chai
+          .request(server)
+          .keepOpen()
+          .post(`/api/books/${insertedId}`)
+          .send({})
+          .end(function(err,res){
+            assert.equal(res.text,'missing required field comment');
+            done()
+          })
       });
 
       test('Test POST /api/books/[id] with comment, id not in db', function(done){
-        //done();
+        chai
+          .request(server)
+          .keepOpen()
+          .post('/api/books/q4gq34gq3048t')
+          .send({comment:'phylosophical'})
+          .end(function(err,res){
+            assert.equal(res.text,'no book exists');
+            done();
+          });
       });
       
     });
@@ -138,11 +161,25 @@ suite('Functional Tests', function() {
     suite('DELETE /api/books/[id] => delete book object id', function() {
 
       test('Test DELETE /api/books/[id] with valid id in db', function(done){
-        //done();
+        chai
+          .request(server)
+          .keepOpen()
+          .delete(`/api/books/${insertedId}`)
+          .end(function(err,res){
+            assert.equal(res.text,'delete successful');
+            done();
+          })
       });
 
       test('Test DELETE /api/books/[id] with  id not in db', function(done){
-        //done();
+        chai
+          .request(server)
+          .keepOpen()
+          .delete('/api/books/qwo4gq34g')
+          .end(function(err,res){
+            assert.equal(res.text,'no book exists');
+            done();
+          });
       });
 
     });
