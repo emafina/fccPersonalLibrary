@@ -48,8 +48,14 @@ module.exports = function (app) {
         });
     })
     
-    .delete(function(req, res){
+    .delete(async function(req, res){
       //if successful response will be 'complete delete successful'
+      try {
+        await Book.deleteMany()  
+      } catch (error) {
+        res.send('error while deleting');
+      };
+      res.send('complete delete successful');
     });
 
   app.route('/api/books/:id')
